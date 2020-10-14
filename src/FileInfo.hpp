@@ -3,6 +3,8 @@
 #include <vector>
 #include <cstdint>
 
+namespace filefinder {
+
 typedef std::uint64_t u64;
 
 class FileInfo
@@ -14,3 +16,5 @@ public:
     u64 fsize;
 
 };
+
+}

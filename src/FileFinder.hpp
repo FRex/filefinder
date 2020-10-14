@@ -4,6 +4,8 @@
 #include <vector>
 #include <mutex>
 
+namespace filefinder {
+
 class FileFinder
 {
 public:
@@ -35,3 +37,5 @@ private:
     u64 m_skippedsmallfilecount = 0u;
 
 };
+
+}

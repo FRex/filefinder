@@ -2,12 +2,12 @@
 
 int wmain(int argc, wchar_t ** argv)
 {
-    FileFinder finder;
-    finder.setRootDirs({ L"C:", L"D:", L"F:" });
+    filefinder::FileFinder finder;
+    finder.setRootDirs({ argv[1] });
     finder.setIgnoreDirs({ L"C:/Windows" });
 
     std::vector<std::wstring> dirs;
-    std::vector<FileInfo> files;
+    std::vector<filefinder::FileInfo> files;
 
     finder.run(8, dirs, files);
 

@@ -3,6 +3,8 @@
 #include <thread>
 #include <chrono>
 
+namespace filefinder {
+
 void FileFinder::setRootDirs(const std::vector<std::wstring>& rootdirs)
 {
     m_rootdirs = rootdirs;
@@ -157,4 +159,6 @@ void FileFinder::work()
     }//while 1
 
     addFiles(ret, skipped);
+}
+
 }
