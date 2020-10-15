@@ -1,6 +1,7 @@
 #include "FileFinder.hpp"
 #include <Windows.h>
-#include <thread>
+#include <algorithm>
+#include <chrono>
 #include <chrono>
 
 namespace filefinder {
@@ -42,6 +43,11 @@ void FileFinder::run(int threadcount, std::vector<std::wstring>& dirsout, std::v
 u64 FileFinder::getSkippedSmallFileCount() const
 {
     return m_skippedsmallfilecount;
+}
+
+void FileFinder::setFileFilter(FileFilterFunc_t f)
+{
+    m_filter = f;
 }
 
 std::wstring FileFinder::getNextDir()
@@ -97,7 +103,7 @@ static inline u64 fsizeFromFileData(const WIN32_FIND_DATAW& f)
     return (high * (maxdword + 1)) + low;
 }
 
-static u64 listDir(const std::wstring& dir, std::vector<FileInfo>& files, std::vector<std::wstring>& dirs, u64 minfsize)
+static u64 listDir(const std::wstring& dir, std::vector<FileInfo>& files, std::vector<std::wstring>& dirs, u64 minfsize, FileFilterFunc_t filter)
 {
     WIN32_FIND_DATAW data;
     HANDLE h = FindFirstFileW((dir + L"\\*").c_str(), &data);
@@ -120,7 +126,11 @@ static u64 listDir(const std::wstring& dir, std::vector<FileInfo>& files, std::v
                 if(fsize < minfsize)
                     ++retskipped;
                 else
-                    files.push_back(FileInfo(fname, fsize));
+                {
+                    //call the filter if its present
+                    if(!filter || filter(dir.c_str(), data.cFileName, fsize))
+                        files.push_back(FileInfo(fname, fsize));
+                }
             }
         }//if not dot or 2 dots
 
@@ -154,7 +164,7 @@ void FileFinder::work()
             continue;
         }//if dir
 
-        skipped += listDir(dir, ret, dirs, m_minimumfsize);
+        skipped += listDir(dir, ret, dirs, m_minimumfsize, m_filter);
         addDirs(dirs);
     }//while 1
 

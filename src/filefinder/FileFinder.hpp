@@ -6,6 +6,8 @@
 
 namespace filefinder {
 
+typedef bool(*FileFilterFunc_t)(const wchar_t *, const wchar_t *, u64);
+
 class FileFinder
 {
 public:
@@ -14,6 +16,7 @@ public:
     void setIgnoreDirs(const std::vector<std::wstring>& ignoredirs);
     void run(int threadcount, std::vector<std::wstring>& dirsout, std::vector<FileInfo>& filesout);
     u64 getSkippedSmallFileCount() const;
+    void setFileFilter(FileFilterFunc_t f);
 
 private:
     //thread safe for use in work():
@@ -35,6 +38,7 @@ private:
     std::vector<FileInfo> m_files;
     std::size_t m_dirit = 0u;
     u64 m_skippedsmallfilecount = 0u;
+    FileFilterFunc_t m_filter = 0x0;
 
 };
 
